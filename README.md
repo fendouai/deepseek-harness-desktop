@@ -8,7 +8,7 @@ An independent desktop distribution of DeepSeek Harness with the complete Web UI
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-22c55e.svg)](LICENSE) [![Tauri 2](https://img.shields.io/badge/Tauri-2-24C8DB?logo=tauri&logoColor=white)](https://v2.tauri.app/) [![Node.js 24](https://img.shields.io/badge/Node.js-24-5FA04E?logo=nodedotjs&logoColor=white)](https://nodejs.org/) [![GitHub stars](https://img.shields.io/github/stars/fendouai/deepseek-harness-desktop?style=flat&logo=github)](https://github.com/fendouai/deepseek-harness-desktop/stargazers)
 
-English · [中文](README.zh.md) · [Quick start](#quick-start) · [Architecture](#how-it-works) · [Contributing](CONTRIBUTING.md)
+English · [中文](README.zh.md) · [Download](#download) · [Quick start](#quick-start) · [Architecture](#how-it-works) · [Contributing](CONTRIBUTING.md)
 
 </div>
 
@@ -34,6 +34,17 @@ English · [中文](README.zh.md) · [Quick start](#quick-start) · [Architectur
 | ![General settings in the desktop application](assets/screenshots/desktop-settings.png) | ![Model provider settings in the desktop application](assets/screenshots/desktop-models.png) |
 
 ![Plugin configuration in the desktop application](assets/screenshots/desktop-plugins.png)
+
+<a id="download"></a>
+
+## Download
+
+[![Download for macOS](https://img.shields.io/badge/Download-macOS_Apple_Silicon-000000?style=for-the-badge&logo=apple&logoColor=white)](https://github.com/fendouai/deepseek-harness-desktop/releases/download/v0.1.0-rc.5/DeepSeek-Harness_0.1.0-rc.5_aarch64.dmg)
+
+The developer-preview DMG supports Apple Silicon Macs (`arm64`). This build uses ad-hoc code signing and is not notarized by Apple; if macOS blocks the first launch, Control-click **DeepSeek Harness**, choose **Open**, and confirm the prompt.
+
+- [Download DeepSeek Harness Desktop v0.1.0-rc.5](https://github.com/fendouai/deepseek-harness-desktop/releases/download/v0.1.0-rc.5/DeepSeek-Harness_0.1.0-rc.5_aarch64.dmg) (DMG, 100 MB)
+- [Release notes and SHA-256 checksum](https://github.com/fendouai/deepseek-harness-desktop/releases/tag/v0.1.0-rc.5)
 
 <a id="run"></a>
 

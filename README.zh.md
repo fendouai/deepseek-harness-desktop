@@ -8,7 +8,7 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-22c55e.svg)](LICENSE) [![Tauri 2](https://img.shields.io/badge/Tauri-2-24C8DB?logo=tauri&logoColor=white)](https://v2.tauri.app/) [![Node.js 24](https://img.shields.io/badge/Node.js-24-5FA04E?logo=nodedotjs&logoColor=white)](https://nodejs.org/) [![GitHub stars](https://img.shields.io/github/stars/fendouai/deepseek-harness-desktop?style=flat&logo=github)](https://github.com/fendouai/deepseek-harness-desktop/stargazers)
 
-[English](README.md) · 中文 · [快速开始](#quick-start) · [运行原理](#how-it-works) · [参与贡献](CONTRIBUTING.md)
+[English](README.md) · 中文 · [下载](#download) · [快速开始](#quick-start) · [运行原理](#how-it-works) · [参与贡献](CONTRIBUTING.md)
 
 </div>
 
@@ -34,6 +34,17 @@
 | ![桌面应用中的通用设置](assets/screenshots/desktop-settings.png) | ![桌面应用中的模型提供方设置](assets/screenshots/desktop-models.png) |
 
 ![桌面应用中的插件配置](assets/screenshots/desktop-plugins.png)
+
+<a id="download"></a>
+
+## 下载
+
+[![下载 macOS 版](https://img.shields.io/badge/下载-macOS_Apple_Silicon-000000?style=for-the-badge&logo=apple&logoColor=white)](https://github.com/fendouai/deepseek-harness-desktop/releases/download/v0.1.0-rc.5/DeepSeek-Harness_0.1.0-rc.5_aarch64.dmg)
+
+开发者预览版 DMG 支持 Apple Silicon Mac（`arm64`）。此构建采用 ad-hoc 代码签名，尚未经过 Apple 公证；如果 macOS 阻止首次启动，请按住 Control 点击 **DeepSeek Harness**，选择**打开**，然后确认系统提示。
+
+- [下载 DeepSeek Harness Desktop v0.1.0-rc.5](https://github.com/fendouai/deepseek-harness-desktop/releases/download/v0.1.0-rc.5/DeepSeek-Harness_0.1.0-rc.5_aarch64.dmg)（DMG，100 MB）
+- [查看发布说明和 SHA-256 校验值](https://github.com/fendouai/deepseek-harness-desktop/releases/tag/v0.1.0-rc.5)
 
 <a id="run"></a>
 
