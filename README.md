@@ -25,6 +25,16 @@ English · [中文](README.zh.md) · [Quick start](#quick-start) · [Architectur
 - **Small trusted desktop layer** — the loopback UI receives no Tauri shell capability; process control stays in Rust.
 - **Cross-platform build path** — bundled Node targets are defined for Apple Silicon and Intel macOS, x64 and ARM64 Linux, and x64 and ARM64 Windows.
 
+## Desktop preview
+
+![DeepSeek Harness Desktop home screen](assets/screenshots/desktop-home.png)
+
+| General settings | Model providers |
+| --- | --- |
+| ![General settings in the desktop application](assets/screenshots/desktop-settings.png) | ![Model provider settings in the desktop application](assets/screenshots/desktop-models.png) |
+
+![Plugin configuration in the desktop application](assets/screenshots/desktop-plugins.png)
+
 <a id="run"></a>
 
 <a id="quick-start"></a>

@@ -25,6 +25,16 @@
 - **精简的可信桌面层** —— 回环地址加载的 UI 不具备 Tauri shell 权限，进程控制只存在于 Rust 中。
 - **跨平台构建路径** —— 内置 Node 目标覆盖 Apple Silicon 与 Intel macOS、x64 与 ARM64 Linux，以及 x64 与 ARM64 Windows。
 
+## 桌面界面预览
+
+![DeepSeek Harness Desktop 首页](assets/screenshots/desktop-home.png)
+
+| 通用设置 | 模型提供方 |
+| --- | --- |
+| ![桌面应用中的通用设置](assets/screenshots/desktop-settings.png) | ![桌面应用中的模型提供方设置](assets/screenshots/desktop-models.png) |
+
+![桌面应用中的插件配置](assets/screenshots/desktop-plugins.png)
+
 <a id="run"></a>
 
 <a id="quick-start"></a>
