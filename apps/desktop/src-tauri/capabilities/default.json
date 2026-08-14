@@ -1,0 +1,8 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "main-local-document",
+  "description": "Core window operations for the local startup document; sidecar control remains in Rust.",
+  "local": true,
+  "windows": ["main"],
+  "permissions": ["core:default"]
+}

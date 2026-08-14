@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>DeepSeek Harness</title>
+    <style>
+      :root { color-scheme: light dark; font-family: ui-sans-serif, system-ui, sans-serif; }
+      body { margin: 0; min-height: 100vh; display: grid; place-items: center; background: #101114; color: #f2f4f7; }
+      main { display: grid; justify-items: center; gap: 18px; }
+      .mark { width: 42px; height: 42px; border: 3px solid #343943; border-top-color: #60a5fa; border-radius: 999px; animation: spin 900ms linear infinite; }
+      p { margin: 0; color: #aeb4bf; font-size: 14px; }
+      @keyframes spin { to { transform: rotate(360deg); } }
+      @media (prefers-reduced-motion: reduce) { .mark { animation: none; border-top-color: #60a5fa; } }
+    </style>
+  </head>
+  <body>
+    <main>
+      <div class="mark" aria-hidden="true"></div>
+      <p>Starting DeepSeek Harness…</p>
+    </main>
+  </body>
+</html>

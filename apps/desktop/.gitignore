@@ -1,0 +1,6 @@
+/src-tauri/binaries/dsh-node-*
+/src-tauri/runtime/*
+!/src-tauri/runtime/.gitkeep
+/src-tauri/target/
+/src-tauri/gen/
+/.cache/

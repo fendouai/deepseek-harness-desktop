@@ -47,8 +47,8 @@ const repositoryUrl = 'git+https://github.com/deepseek-harness/deepseek-harness.
  * their trusted publishing against the repository that runs the workflow.
  */
 const publishedRepositoryUrl = 'git+https://github.com/deepseek-ai/deepseek-harness.git'
-/** Directories whose packages this repository publishes: one release member each. */
-const releaseMemberDirectory = /^(?:packages\/[^/]+\/[^/]+|apps\/[^/]+|vendor\/[^/]+)$/
+/** Package directories that always participate in an npm release sequence. */
+const releaseMemberDirectory = /^(?:packages\/[^/]+\/[^/]+|vendor\/[^/]+)$/
 
 const localArtifactDirs = new Set(['node_modules'])
 const appPackageFiles: Readonly<Record<string, readonly string[]>> = {
@@ -226,6 +226,9 @@ function checkWorkspace({ dir, manifest }: WorkspaceManifest): string[] {
   const isPublicLandlockPackage = isLandlockPackageDir
     && manifest.name !== undefined
     && publicLandlockPackages.has(manifest.name)
+  const isPublishedApp = dir.startsWith('apps/')
+    && manifest.name !== undefined
+    && appPackageFiles[manifest.name] !== undefined
 
   if (isPublicLandlockPackage) {
     if (manifest.private === true) {
@@ -240,7 +243,7 @@ function checkWorkspace({ dir, manifest }: WorkspaceManifest): string[] {
       || manifest.repository.directory !== expectedDirectory) {
       errors.push(`${label}: published Landlock package repository must use ${repositoryUrl} with directory ${expectedDirectory} for trusted publishing`)
     }
-  } else if (releaseMemberDirectory.test(dir)) {
+  } else if (releaseMemberDirectory.test(dir) || isPublishedApp) {
     // Release members state that they are publishable: npm refuses a private
     // package, and the repository field is how a consumer finds the source of
     // the package it installed.
