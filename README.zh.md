@@ -1,10 +1,10 @@
 <div align="center">
 
-# DeepSeek Harness Desktop
+# [**deepseek-harness-desktop**](https://github.com/fendouai/deepseek-harness-desktop)
 
 ### 将插件原生的 AI Agent 工作台，装进真正的桌面应用。
 
-完整复用 DeepSeek Harness Web UI，以受控本地 sidecar 运行 Harness，并内置 Node.js 运行时——最终用户无需另行安装 Node.js。
+这是 DeepSeek Harness 的独立桌面发行项目，完整复用 Web UI，以受控本地 sidecar 运行 Harness，并内置 Node.js 运行时。
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-22c55e.svg)](LICENSE) [![Tauri 2](https://img.shields.io/badge/Tauri-2-24C8DB?logo=tauri&logoColor=white)](https://v2.tauri.app/) [![Node.js 24](https://img.shields.io/badge/Node.js-24-5FA04E?logo=nodedotjs&logoColor=white)](https://nodejs.org/) [![GitHub stars](https://img.shields.io/github/stars/fendouai/deepseek-harness-desktop?style=flat&logo=github)](https://github.com/fendouai/deepseek-harness-desktop/stargazers)
 
@@ -14,9 +14,9 @@
 
 <blockquote><strong>开发者预览：</strong>首个稳定版本发布前可能出现破坏兼容性的变更。</blockquote>
 
-## 为什么做这个项目
+## 关于本项目
 
-[DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) 是围绕一条核心原则构建的开源智能体框架：**一切皆插件**。本仓库将这套系统封装为本地桌面应用，同时保留 Harness 现有运行时、插件架构和 Web UI。
+[**deepseek-harness-desktop**](https://github.com/fendouai/deepseek-harness-desktop) 将 [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) 封装为自包含桌面应用。本仓库将其作为独立项目维护，同时保留上游 Harness 运行时、插件架构和 Web UI。
 
 - **一个应用，完整运行时** —— Tauri 内置生产版 `dsh` 部署和官方 Node.js 24 可执行文件。
 - **完整 Harness 体验** —— 工作区、会话、设置、工具、技能、subagent 和插件组合继续由现有 Web UI 提供。
@@ -31,19 +31,9 @@
 
 ## 快速开始
 
-### 立即使用 CLI
-
-如果你只需要现有 Web UI，安装 Node.js 后运行：
-
-```sh
-npx @deepseek-ai/dsh web
-```
-
-UI 默认地址为 `http://127.0.0.1:3080`。详见 [Web UI 指南](docs/user/guide/index.md)。
-
 <a id="run-from-source"></a>
 
-### 构建桌面应用
+### 从源码构建
 
 从源码构建需要仓库指定的 Node.js 与 pnpm 版本、Rust，以及 [Tauri 2 平台依赖](https://v2.tauri.app/start/prerequisites/)。
 
@@ -54,13 +44,13 @@ pnpm install
 pnpm --filter dsh-desktop build
 ```
 
-macOS 应用生成于：
+macOS 是当前已经验证的桌面目标，应用生成于：
 
 ```text
 apps/desktop/src-tauri/target/release/bundle/macos/DeepSeek Harness.app
 ```
 
-如需在 Tauri 窗口中开发并查看实时进程输出：
+在开发模式下运行桌面应用并查看实时进程输出：
 
 ```sh
 pnpm --filter dsh-desktop dev
@@ -83,36 +73,17 @@ flowchart LR
 
 运行时与交叉编译约定详见[桌面应用 README](apps/desktop/README.md)。架构决策记录于[桌面宿主 Agent Note](.agents/notes/implemented/architecture/2026-08-14-tauri-desktop-sidecar-host.md)。
 
-## 什么是 DeepSeek Harness？
+## 上游基础
 
 DeepSeek Harness 由 [Cordis](https://github.com/cordiverse/cordis) 驱动，其组合模型参见论文 [_A Programming Paradigm for Spatiotemporal Composability_](https://github.com/cordiverse/paper)。模型、工具、文件系统、shell、会话、工作流、权限、UI 模块及其他能力均由插件提供；应用只组合自身需要的部分。
 
-如需理解运行时，请先阅读[架构文档](docs/architecture.md)；如需参与仓库开发，请阅读[开发指南](docs/development.md)。
+桌面宿主刻意保持精简：产品行为继续由兼容上游的 Harness 插件与现有 Web UI 提供。如需理解运行时，请先阅读[架构文档](docs/architecture.md)；如需参与本仓库开发，请阅读[开发指南](docs/development.md)。
 
-## 社区
+## 项目链接
 
-- 通过 [GitHub Discussions](https://github.com/deepseek-ai/deepseek-harness/discussions) 报告问题或提出建议。
-- 为兼容插件仓库添加 [`dsh-plugin`](https://github.com/topics/dsh-plugin) 话题。
-- 加入 [DeepSeek Harness Discord 社区](https://discord.gg/Ycq5dCaS4)。
-
-加入 DeepSeek Harness 企微群：扫码添加企微小助手并填写入群问卷，完成后小助手会邀请你入群。
-
-<table>
-  <thead>
-    <tr>
-      <th align="center">企微小助手</th>
-      <th align="center">入群问卷</th>
-      <th align="center">微信公众号</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td align="center"><img src="assets/community-wecom-assistant.png" alt="DeepSeek Harness 企微小助手二维码" width="180" height="180"></td>
-      <td align="center"><a href="https://trtgsjkv6r.feishu.cn/share/base/form/shrcnIt5twSVdLGD52KJBckGCgg"><img src="assets/community-wecom-survey.png" alt="DeepSeek Harness 入群问卷二维码" width="180" height="180"></a></td>
-      <td align="center"><img src="assets/community-wechat-official-account.png" alt="DeepSeek Harness 团队微信公众号二维码" width="180" height="180"></td>
-    </tr>
-  </tbody>
-</table>
+- [项目仓库](https://github.com/fendouai/deepseek-harness-desktop)
+- [问题反馈](https://github.com/fendouai/deepseek-harness-desktop/issues)
+- [上游 DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness)
 
 ## 参与贡献
 

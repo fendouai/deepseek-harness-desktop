@@ -1,10 +1,10 @@
 <div align="center">
 
-# DeepSeek Harness Desktop
+# [**deepseek-harness-desktop**](https://github.com/fendouai/deepseek-harness-desktop)
 
 ### The plugin-native AI agent workspace, packaged as a real desktop app.
 
-Run DeepSeek Harness with its full Web UI, a supervised local sidecar, and a bundled Node.js runtime — no separate Node installation required for end users.
+An independent desktop distribution of DeepSeek Harness with the complete Web UI, a supervised local sidecar, and a bundled Node.js runtime.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-22c55e.svg)](LICENSE) [![Tauri 2](https://img.shields.io/badge/Tauri-2-24C8DB?logo=tauri&logoColor=white)](https://v2.tauri.app/) [![Node.js 24](https://img.shields.io/badge/Node.js-24-5FA04E?logo=nodedotjs&logoColor=white)](https://nodejs.org/) [![GitHub stars](https://img.shields.io/github/stars/fendouai/deepseek-harness-desktop?style=flat&logo=github)](https://github.com/fendouai/deepseek-harness-desktop/stargazers)
 
@@ -14,9 +14,9 @@ English · [中文](README.zh.md) · [Quick start](#quick-start) · [Architectur
 
 <blockquote><strong>Developer preview:</strong> expect compatibility-breaking changes before the first stable release.</blockquote>
 
-## Why this project
+## About this project
 
-[DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) is an open-source agent harness built around one powerful rule: **everything is a plugin**. This repository packages that system as a local desktop application while preserving the existing Harness runtime, plugin architecture, and Web UI.
+[**deepseek-harness-desktop**](https://github.com/fendouai/deepseek-harness-desktop) packages [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) as a self-contained desktop application. It is maintained in this repository as an independent project and preserves the upstream Harness runtime, plugin architecture, and Web UI.
 
 - **One app, complete runtime** — Tauri bundles the production `dsh` deployment and an official Node.js 24 executable.
 - **The full Harness experience** — workspaces, sessions, settings, tools, skills, subagents, and plugin composition stay in the existing Web UI.
@@ -31,19 +31,9 @@ English · [中文](README.zh.md) · [Quick start](#quick-start) · [Architectur
 
 ## Quick start
 
-### Use the CLI today
-
-If you only need the existing Web UI, install Node.js and run:
-
-```sh
-npx @deepseek-ai/dsh web
-```
-
-The UI is served at `http://127.0.0.1:3080` by default. See the [Web UI guide](docs/user/guide/index.md).
-
 <a id="run-from-source"></a>
 
-### Build the desktop app
+### Build from source
 
 Building from source requires the repository's Node.js and pnpm versions, Rust, and the [Tauri 2 platform prerequisites](https://v2.tauri.app/start/prerequisites/).
 
@@ -54,13 +44,13 @@ pnpm install
 pnpm --filter dsh-desktop build
 ```
 
-On macOS, the application is written to:
+The macOS build, which is the currently verified desktop target, is written to:
 
 ```text
 apps/desktop/src-tauri/target/release/bundle/macos/DeepSeek Harness.app
 ```
 
-For local development with the Tauri window and live process output:
+Run the desktop application in development mode with live process output:
 
 ```sh
 pnpm --filter dsh-desktop dev
@@ -83,17 +73,17 @@ The preparation step builds Harness and the Web frontend, creates an isolated pr
 
 The detailed runtime and cross-compilation contract lives in the [desktop application README](apps/desktop/README.md). The architectural decision is recorded in the [desktop host Agent Note](.agents/notes/implemented/architecture/2026-08-14-tauri-desktop-sidecar-host.md).
 
-## What is DeepSeek Harness?
+## Upstream foundation
 
 DeepSeek Harness is powered by [Cordis](https://github.com/cordiverse/cordis), whose composition model is described in [_A Programming Paradigm for Spatiotemporal Composability_](https://github.com/cordiverse/paper). Plugins provide the model, tools, filesystem, shell, sessions, workflows, permissions, UI modules, and other capabilities; applications assemble only what they need.
 
-Start with the [architecture documentation](docs/architecture.md) to understand the runtime, or follow the [development guide](docs/development.md) to work on the repository.
+The desktop host is intentionally small: product behavior continues to come from upstream-compatible Harness plugins and the existing Web UI. Start with the [architecture documentation](docs/architecture.md) to understand the runtime, or follow the [development guide](docs/development.md) to work on this repository.
 
-## Community
+## Project links
 
-- Report bugs and propose ideas in [GitHub Discussions](https://github.com/deepseek-ai/deepseek-harness/discussions).
-- Add the [`dsh-plugin`](https://github.com/topics/dsh-plugin) topic to compatible plugin repositories.
-- Join the [DeepSeek Harness Discord community](https://discord.gg/Ycq5dCaS4).
+- [Repository](https://github.com/fendouai/deepseek-harness-desktop)
+- [Issues](https://github.com/fendouai/deepseek-harness-desktop/issues)
+- [Upstream DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness)
 
 ## Contributing
 
