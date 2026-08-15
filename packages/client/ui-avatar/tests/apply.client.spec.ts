@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import { Context } from '@deepseek-ai/cordis'
 import { describe, expect, it, vi } from 'vitest'
-import { SlotRegistry } from '@deepseek-ai/dsh-client-runtime/client'
+import { createSnapshotStore, SlotRegistry } from '@deepseek-ai/dsh-client-runtime/client'
 import { apply, inject } from '@deepseek-ai/dsh-client-ui-avatar/client'
 import { apply as nodeApply } from '@deepseek-ai/dsh-client-ui-avatar'
 import * as invariant from '@deepseek-ai/dsh-client-ui-avatar/invariant'
@@ -9,6 +9,10 @@ import * as invariant from '@deepseek-ai/dsh-client-ui-avatar/invariant'
 describe('ui-avatar client apply', () => {
   it('waits for the overlay declaration, registers additively, and unwinds', async () => {
     const ctx = new Context()
+    ctx.provide('sessions', {
+      list: createSnapshotStore({ current: undefined }),
+      binding: () => undefined,
+    } as never)
     await ctx.plugin(SlotRegistry).await()
     const slots = ctx.get('slots') as SlotRegistry
     const fiber = ctx.plugin({ inject: [...inject], apply })

@@ -1,3 +1,5 @@
 Mina, Yuna, Rin, and Sora are original generated character illustrations created for DeepSeek Harness Desktop. They do not incorporate the external CC0 character packs evaluated during implementation.
 
 The project distributes these files under the repository license. Generated-image provenance is recorded in the implemented Agent Note for this feature. Users remain responsible for reviewing applicable law and platform terms for their intended commercial use.
+
+AvatarSample_A © pixiv VRoid Project. The bundled VRM 1.0 file is redistributed under the VRM Public License 1.0 settings embedded in the model: avatar use by everyone, corporate commercial use, redistribution allowed, and credit required. Source: https://github.com/arkavo-org/VRMMetalKit/blob/main/AvatarSample_A_1.0.vrm.glb

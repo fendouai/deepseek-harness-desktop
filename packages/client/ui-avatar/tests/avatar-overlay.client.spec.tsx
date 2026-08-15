@@ -15,6 +15,7 @@ function hookOf<T>(store: { subscribe: (fn: () => void) => () => void; getSnapsh
 
 function mount(running = false) {
   const store = createAvatarStore().create('overlay-test')
+  store.actions.selectPreset('mina')
   const state = {
     ids: ['session'], current: 'session', phase: 'ready', subagentsByParent: {}, jobsBySession: {},
     byId: { session: { id: 'session', displayTitle: 'Session', running, blank: false, updatedAt: 1 } },

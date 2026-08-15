@@ -3,6 +3,7 @@ import { useRef, useState } from 'react'
 import type { ChangeEvent } from 'react'
 import type { PropsRuntime, PropsStore } from '@deepseek-ai/dsh-client-ui-slots'
 import { AVATAR_PRESETS, createAvatarStore, validateAvatarImage } from './store.ts'
+import { VrmAvatar } from './VrmAvatar.tsx'
 import css from './AvatarOverlay.module.css'
 
 /** Coarse visual state derived only from authoritative session-list facts. */
@@ -12,6 +13,7 @@ export type AvatarActivity = 'idle' | 'working' | 'complete'
 export type AvatarOverlayProps =
   & PropsRuntime<'shell.overlay'>
   & PropsStore<ReturnType<typeof createAvatarStore>>
+  & { speechText?: string }
 
 /** Map the selected session summary onto the visual state machine. */
 export function avatarActivity(summary: { running: boolean; completed?: boolean } | undefined): AvatarActivity {
@@ -21,7 +23,7 @@ export function avatarActivity(summary: { running: boolean; completed?: boolean 
 }
 
 /** Persistent Avatar overlay with an inline appearance panel. */
-export function AvatarOverlay({ useSessions, useStore, actions }: AvatarOverlayProps) {
+export function AvatarOverlay({ useSessions, useStore, actions, speechText = '' }: AvatarOverlayProps) {
   const current = useSessions(state => state.current === undefined ? undefined : state.byId[state.current])
   const activity = avatarActivity(current)
   const preferences = useStore(state => state)
@@ -58,7 +60,9 @@ export function AvatarOverlay({ useSessions, useStore, actions }: AvatarOverlayP
       {preferences.enabled && (
         <div className={css.stage} style={{ width: preferences.size }} aria-label={`Avatar ${activity}`}>
           <div className={css.aura} aria-hidden="true" />
-          <img className={css.character} src={characterImage} alt={preferences.image === null ? `${selectedPreset.name} Avatar character` : 'Your Avatar character'} />
+          {preferences.renderer === 'vrm'
+            ? <VrmAvatar activity={activity} speechText={speechText} />
+            : <img className={css.character} src={characterImage} alt={preferences.image === null ? `${selectedPreset.name} Avatar character` : 'Your Avatar character'} />}
           <div className={css.status}><span className={css.statusDot} />{activity}</div>
         </div>
       )}
@@ -75,16 +79,26 @@ export function AvatarOverlay({ useSessions, useStore, actions }: AvatarOverlayP
       {editing && (
         <div className={css.panel} role="dialog" aria-label="Avatar appearance">
           <strong>Avatar appearance</strong>
-          <p>Choose a bundled character or use your own image.</p>
+          <p>Use the animated VRM model, a bundled character, or your own image.</p>
           <div className={css.presetGrid} aria-label="Bundled characters">
+            <button
+              type="button"
+              className={css.preset}
+              data-selected={preferences.renderer === 'vrm' || undefined}
+              onClick={actions.useVrm}
+              aria-pressed={preferences.renderer === 'vrm'}
+            >
+              <img src="/avatars/avatar-sample-a.png" alt="" />
+              <span>3D VRM</span>
+            </button>
             {AVATAR_PRESETS.map(preset => (
               <button
                 key={preset.id}
                 type="button"
                 className={css.preset}
-                data-selected={preferences.image === null && preferences.preset === preset.id || undefined}
+                data-selected={preferences.renderer === 'image' && preferences.image === null && preferences.preset === preset.id || undefined}
                 onClick={() => actions.selectPreset(preset.id)}
-                aria-pressed={preferences.image === null && preferences.preset === preset.id}
+                aria-pressed={preferences.renderer === 'image' && preferences.image === null && preferences.preset === preset.id}
               >
                 <img src={preset.image} alt="" />
                 <span>{preset.name}</span>
