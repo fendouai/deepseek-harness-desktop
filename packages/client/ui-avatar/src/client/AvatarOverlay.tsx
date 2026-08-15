@@ -103,6 +103,10 @@ export function AvatarOverlay({ useSessions, useStore, actions, motion, sendMess
 
   const toggleListening = (): void => {
     if (listening) { recognition.current?.stop(); return }
+    if (new URLSearchParams(window.location.search).has('dshDesktopDebug')) {
+      setError('Microphone input requires the packaged macOS app. The bare development binary cannot request Speech Recognition safely.')
+      return
+    }
     const SpeechRecognition = speechRecognitionConstructor()
     if (SpeechRecognition === undefined) {
       setError('Voice recognition is unavailable in this WebView. Use the text field instead.')

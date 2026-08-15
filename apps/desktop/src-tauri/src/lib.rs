@@ -104,7 +104,16 @@ fn navigate_to_runtime(app: &tauri::AppHandle, url: Url) -> Result<(), String> {
     let window = app
         .get_webview_window("main")
         .ok_or_else(|| "main window is unavailable".to_string())?;
-    window.navigate(url).map_err(|error| error.to_string())
+    window
+        .navigate(runtime_url(url, cfg!(debug_assertions)))
+        .map_err(|error| error.to_string())
+}
+
+fn runtime_url(mut url: Url, debug_binary: bool) -> Url {
+    if debug_binary {
+        url.query_pairs_mut().append_pair("dshDesktopDebug", "1");
+    }
+    url
 }
 
 fn show_startup_failure(app: &tauri::AppHandle) {
@@ -145,5 +154,11 @@ mod tests {
         let mut output = "complete\ndsh web: http://127.0".to_string();
         retain_unfinished_line(&mut output);
         assert_eq!(output, "dsh web: http://127.0");
+    }
+
+    #[test]
+    fn marks_debug_runtime_url() {
+        let url = Url::parse("http://127.0.0.1:49152/").unwrap();
+        assert_eq!(runtime_url(url, true).query(), Some("dshDesktopDebug=1"));
     }
 }

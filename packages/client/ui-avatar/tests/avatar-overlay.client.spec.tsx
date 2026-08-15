@@ -60,4 +60,13 @@ describe('Avatar overlay', () => {
     expect(getByLabelText('Talk to current task')).toBeTruthy()
     expect(getByLabelText('Message current task')).toBeTruthy()
   })
+
+  it('does not request speech recognition from a bare desktop debug binary', () => {
+    window.history.replaceState({}, '', '/?dshDesktopDebug=1')
+    const { getByRole } = mount()
+    fireEvent.click(getByRole('button', { name: 'Talk' }))
+    fireEvent.click(getByRole('button', { name: 'Mic' }))
+    expect(getByRole('alert').textContent).toContain('packaged macOS app')
+    window.history.replaceState({}, '', '/')
+  })
 })

@@ -8,7 +8,7 @@ VRM 渲染器把当前回复流式文本的末尾字符映射到标准 `aa`、`i
 
 内置 3D 模型为 AvatarSample_A © pixiv VRoid Project。其内嵌 VRM 1.0 设置允许所有人用作 Avatar、企业商用以及署名再分发，适用 VRM Public License 1.0。完整署名随模型保存在 `apps/web/public/avatars/ATTRIBUTION.txt`。
 
-`Talk` 控件通过当前任务的常规排队 prompt 方法把输入文字直接发送给当前选中的 Harness 任务。平台 WebView 提供 Web Speech Recognition API 时，麦克风控件使用该能力；识别文字会保留在输入框中，供用户确认后再发送。`Read Assistant replies aloud` 使用系统 Speech Synthesis API，并在播放语音时驱动相同的 VRM 口型目标。macOS bundle 声明麦克风、语音识别与音频输入权限。平台不支持 Web Speech Recognition 时，文字对话和回复朗读仍然可用，麦克风会在本地报告不支持。
+`Talk` 控件通过当前任务的常规排队 prompt 方法把输入文字直接发送给当前选中的 Harness 任务。平台 WebView 提供 Web Speech Recognition API 时，麦克风控件使用该能力；识别文字会保留在输入框中，供用户确认后再发送。`Read Assistant replies aloud` 使用系统 Speech Synthesis API，并在播放语音时驱动相同的 VRM 口型目标。打包后的 macOS 应用声明麦克风、语音识别与音频输入权限。裸 `tauri dev` 二进制无法携带这些 bundle 声明，因此它的麦克风控件会在本地停止，不会调用 macOS 隐私服务。平台不支持 Web Speech Recognition 时，文字对话和回复朗读仍然可用，麦克风会在本地报告不支持。
 
 ## 模型体验
 
