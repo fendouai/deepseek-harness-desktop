@@ -1,0 +1,3 @@
+Mina, Yuna, Rin, and Sora are original generated character illustrations created for DeepSeek Harness Desktop. They do not incorporate the external CC0 character packs evaluated during implementation.
+
+The project distributes these files under the repository license. Generated-image provenance is recorded in the implemented Agent Note for this feature. Users remain responsible for reviewing applicable law and platform terms for their intended commercial use.

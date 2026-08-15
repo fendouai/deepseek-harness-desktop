@@ -1,0 +1,6 @@
+# Bilingual-pair consistency record (docs/i18n/README.md): the git blob hash of each
+# side as of the last confirmed-consistent state. Both languages carry equal authority;
+# after editing either side, bring the other along and re-record with:
+#   pnpm run verify-translation-pairing --write .agents/notes/implemented/feature/2026-08-15-session-aware-one-image-avatar.md
+2026-08-15-session-aware-one-image-avatar.md: 59e8b952099dfae56ab2eb7a4c621bd89a1e15f4
+2026-08-15-session-aware-one-image-avatar.zh.md: 96650eef3535ce06915f495170f95835456f9b09
