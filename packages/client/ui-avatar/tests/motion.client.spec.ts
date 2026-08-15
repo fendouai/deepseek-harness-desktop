@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { describe, expect, it } from 'vitest'
-import { partialSpeechText, visemeForText } from '@deepseek-ai/dsh-client-ui-avatar/client'
+import { finalSpeech, partialSpeechText, visemeForText } from '@deepseek-ai/dsh-client-ui-avatar/client'
 import { VRMExpressionPresetName } from '@pixiv/three-vrm'
 import type { ConversationSnapshot } from '@deepseek-ai/dsh-client-runtime/client'
 
@@ -22,5 +22,13 @@ describe('Avatar motion projection', () => {
     expect(visemeForText('hi')).toBe(VRMExpressionPresetName.Ih)
     expect(visemeForText('you')).toBe(VRMExpressionPresetName.Ou)
     expect(visemeForText('hello')).toBe(VRMExpressionPresetName.Oh)
+  })
+
+  it('selects the latest finalized Assistant reply for speech output', () => {
+    const snapshot = { nodes: [
+      { kind: 'assistant', seq: 2, blocks: [{ kind: 'text', text: 'first' }] },
+      { kind: 'assistant', seq: 7, blocks: [{ kind: 'text', text: '你好' }] },
+    ] } as unknown as ConversationSnapshot
+    expect(finalSpeech(snapshot)).toEqual({ finalText: '你好', finalSeq: 7 })
   })
 })

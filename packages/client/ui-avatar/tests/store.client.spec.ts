@@ -10,12 +10,21 @@ describe('Avatar store', () => {
     store.actions.setImage('data:image/png;base64,AA==')
     store.actions.setSize(900)
     store.actions.toggle()
-    expect(store.getSnapshot()).toEqual({ enabled: false, image: 'data:image/png;base64,AA==', renderer: 'image', preset: 'mina', size: 420 })
+    expect(store.getSnapshot()).toEqual({
+      enabled: false,
+      image: 'data:image/png;base64,AA==',
+      renderer: 'image',
+      speakReplies: false,
+      preset: 'mina',
+      size: 420,
+    })
     store.actions.selectPreset('rin')
     expect(store.getSnapshot().image).toBeNull()
     expect(store.getSnapshot().preset).toBe('rin')
     store.actions.useVrm()
     expect(store.getSnapshot().renderer).toBe('vrm')
+    store.actions.toggleSpeakReplies()
+    expect(store.getSnapshot().speakReplies).toBe(true)
   })
 
   it('clamps character size symmetrically', () => {

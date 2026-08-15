@@ -29,17 +29,20 @@ export function visemeForText(text: string): typeof MOUTH_PRESETS[number] {
 interface VrmAvatarProps {
   activity: AvatarActivity
   speechText: string
+  speechActive: boolean
 }
 
 /** Render and animate the bundled VRM character. */
-export function VrmAvatar({ activity, speechText }: VrmAvatarProps) {
+export function VrmAvatar({ activity, speechText, speechActive }: VrmAvatarProps) {
   const canvas = useRef<HTMLCanvasElement | null>(null)
   const activityRef = useRef(activity)
   const speechRef = useRef(speechText)
+  const speechActiveRef = useRef(speechActive)
   const speechPulse = useRef(0)
   const [loadState, setLoadState] = useState<'loading' | 'ready' | 'error'>('loading')
 
   activityRef.current = activity
+  speechActiveRef.current = speechActive
   if (speechRef.current !== speechText) {
     speechRef.current = speechText
     speechPulse.current = 1
@@ -99,7 +102,7 @@ export function VrmAvatar({ activity, speechText }: VrmAvatarProps) {
         if (expressions !== undefined) {
           for (const preset of MOUTH_PRESETS) expressions.setValue(preset, 0)
           speechPulse.current = Math.max(0, speechPulse.current - delta * 2.4)
-          if (speechRef.current !== '' && activityRef.current === 'working') {
+          if (speechRef.current !== '' && speechActiveRef.current) {
             const openness = (0.28 + 0.72 * Math.abs(Math.sin(elapsed * 13))) * (0.35 + 0.65 * speechPulse.current)
             expressions.setValue(visemeForText(speechRef.current), openness)
           }
@@ -111,26 +114,27 @@ export function VrmAvatar({ activity, speechText }: VrmAvatarProps) {
         }
 
         const humanoid = model.humanoid
-        const head = humanoid?.getNormalizedBoneNode(VRMHumanBoneName.Head)
-        const spine = humanoid?.getNormalizedBoneNode(VRMHumanBoneName.Spine)
-        const leftArm = humanoid?.getNormalizedBoneNode(VRMHumanBoneName.LeftUpperArm)
-        const rightArm = humanoid?.getNormalizedBoneNode(VRMHumanBoneName.RightUpperArm)
-        const leftForearm = humanoid?.getNormalizedBoneNode(VRMHumanBoneName.LeftLowerArm)
-        const rightForearm = humanoid?.getNormalizedBoneNode(VRMHumanBoneName.RightLowerArm)
-        if (head !== null && head !== undefined) {
-          head.rotation.y = Math.sin(elapsed * 0.55) * 0.055
-          head.rotation.x = activityRef.current === 'working' ? 0.08 + Math.sin(elapsed * 2.5) * 0.025 : Math.sin(elapsed * 0.7) * 0.02
+        const head = humanoid.getNormalizedBoneNode(VRMHumanBoneName.Head)
+        const spine = humanoid.getNormalizedBoneNode(VRMHumanBoneName.Spine)
+        const leftArm = humanoid.getNormalizedBoneNode(VRMHumanBoneName.LeftUpperArm)
+        const rightArm = humanoid.getNormalizedBoneNode(VRMHumanBoneName.RightUpperArm)
+        const leftForearm = humanoid.getNormalizedBoneNode(VRMHumanBoneName.LeftLowerArm)
+        const rightForearm = humanoid.getNormalizedBoneNode(VRMHumanBoneName.RightLowerArm)
+        model.scene.position.y = Math.sin(elapsed * 1.4) * 0.025
+        model.scene.rotation.y = Math.sin(elapsed * 0.55) * 0.045
+        if (head !== null) {
+          head.rotation.y = Math.sin(elapsed * 0.8) * 0.09
+          head.rotation.x = activityRef.current === 'working' ? 0.08 + Math.sin(elapsed * 3) * 0.045 : Math.sin(elapsed * 1.2) * 0.04
         }
-        if (spine !== null && spine !== undefined) spine.rotation.z = Math.sin(elapsed * 0.8) * 0.018
+        if (spine !== null) {
+          spine.rotation.z = Math.sin(elapsed * 1.1) * 0.035
+          spine.rotation.x = Math.sin(elapsed * 1.4) * 0.018
+        }
         const working = activityRef.current === 'working'
-        if (leftArm !== null && leftArm !== undefined) leftArm.rotation.z = working ? -0.72 : -1.05
-        if (rightArm !== null && rightArm !== undefined) rightArm.rotation.z = working ? 0.72 : 1.05
-        if (leftForearm !== null && leftForearm !== undefined) {
-          leftForearm.rotation.y = working ? -0.78 + Math.sin(elapsed * 5) * 0.05 : -0.2
-        }
-        if (rightForearm !== null && rightForearm !== undefined) {
-          rightForearm.rotation.y = working ? 0.78 - Math.sin(elapsed * 5) * 0.05 : 0.2
-        }
+        if (leftArm !== null) leftArm.rotation.z = (working ? -0.72 : -1.05) + Math.sin(elapsed * 1.3) * 0.035
+        if (rightArm !== null) rightArm.rotation.z = (working ? 0.72 : 1.05) - Math.sin(elapsed * 1.3) * 0.035
+        if (leftForearm !== null) leftForearm.rotation.y = working ? -0.78 + Math.sin(elapsed * 5) * 0.05 : -0.2
+        if (rightForearm !== null) rightForearm.rotation.y = working ? 0.78 - Math.sin(elapsed * 5) * 0.05 : 0.2
         model.update(delta)
       }
       renderer.render(scene, camera)
@@ -144,8 +148,9 @@ export function VrmAvatar({ activity, speechText }: VrmAvatarProps) {
       renderer.dispose()
       vrm?.scene.traverse((object) => {
         if (object instanceof THREE.Mesh) {
-          object.geometry.dispose()
-          const materials = Array.isArray(object.material) ? object.material : [object.material]
+          const geometry = object.geometry as THREE.BufferGeometry
+          geometry.dispose()
+          const materials = (Array.isArray(object.material) ? object.material : [object.material]) as THREE.Material[]
           for (const material of materials) material.dispose()
         }
       })

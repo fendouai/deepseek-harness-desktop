@@ -13,10 +13,14 @@ export const inject = ['slots', 'sessions']
 /** Register the Avatar beside other frame-wide overlays. */
 export function apply(ctx: ClientContext): void {
   const motion = createAvatarMotionSource(ctx.sessions)
-  ctx.effect(() => motion.dispose)
+  ctx.effect(() => () => { motion.dispose() })
   const AvatarSlot = (props: AvatarOverlayProps) => {
-    const speechText = useSyncExternalStore(motion.subscribe, motion.getSnapshot, motion.getSnapshot)
-    return createElement(AvatarOverlay, { ...props, speechText })
+    const motionSnapshot = useSyncExternalStore(
+      listener => motion.subscribe(listener),
+      () => motion.getSnapshot(),
+      () => motion.getSnapshot(),
+    )
+    return createElement(AvatarOverlay, { ...props, motion: motionSnapshot, sendMessage: text => motion.send(text) })
   }
   ctx.slots.inject('shell.overlay', () => ctx.slots.register({
     name: 'shell.overlay',
@@ -28,5 +32,7 @@ export function apply(ctx: ClientContext): void {
 
 export { AvatarOverlay, avatarActivity, type AvatarActivity, type AvatarOverlayProps } from './AvatarOverlay.tsx'
 export { createAvatarStore, clampAvatarSize, validateAvatarImage, MAX_AVATAR_IMAGE_BYTES } from './store.ts'
-export { createAvatarMotionSource, partialSpeechText, type AvatarMotionSource } from './motion.ts'
+export {
+  createAvatarMotionSource, finalSpeech, partialSpeechText, type AvatarMotionSnapshot, type AvatarMotionSource,
+} from './motion.ts'
 export { visemeForText } from './VrmAvatar.tsx'

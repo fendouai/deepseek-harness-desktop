@@ -53,4 +53,11 @@ describe('Avatar overlay', () => {
     fireEvent.click(getByRole('button', { name: 'Rin' }))
     expect(getByLabelText('Avatar idle').querySelector('img')?.getAttribute('src')).toBe('/avatars/rin.png')
   })
+
+  it('opens task conversation controls', () => {
+    const { getByRole, getByLabelText } = mount()
+    fireEvent.click(getByRole('button', { name: 'Talk' }))
+    expect(getByLabelText('Talk to current task')).toBeTruthy()
+    expect(getByLabelText('Message current task')).toBeTruthy()
+  })
 })
