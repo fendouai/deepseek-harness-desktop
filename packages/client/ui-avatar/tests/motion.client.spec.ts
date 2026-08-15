@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { describe, expect, it } from 'vitest'
-import { finalSpeech, partialSpeechText, visemeForText } from '@deepseek-ai/dsh-client-ui-avatar/client'
+import { finalSpeech, partialSpeechText, selectAvatarMotion, visemeForText } from '@deepseek-ai/dsh-client-ui-avatar/client'
 import { VRMExpressionPresetName } from '@pixiv/three-vrm'
 import type { ConversationSnapshot } from '@deepseek-ai/dsh-client-runtime/client'
 
@@ -22,6 +22,13 @@ describe('Avatar motion projection', () => {
     expect(visemeForText('hi')).toBe(VRMExpressionPresetName.Ih)
     expect(visemeForText('you')).toBe(VRMExpressionPresetName.Ou)
     expect(visemeForText('hello')).toBe(VRMExpressionPresetName.Oh)
+  })
+
+  it('prioritizes speaking gestures over task-state motion', () => {
+    expect(selectAvatarMotion('idle', false)).toBe('idle')
+    expect(selectAvatarMotion('working', false)).toBe('working')
+    expect(selectAvatarMotion('complete', false)).toBe('complete')
+    expect(selectAvatarMotion('working', true)).toBe('speaking')
   })
 
   it('selects the latest finalized Assistant reply for speech output', () => {

@@ -1799,6 +1799,9 @@ importers:
       '@pixiv/three-vrm':
         specifier: 3.5.5
         version: 3.5.5(three@0.180.0)
+      '@pixiv/three-vrm-animation':
+        specifier: 3.5.5
+        version: 3.5.5(three@0.180.0)
       three:
         specifier: 0.180.0
         version: 0.180.0
@@ -10737,6 +10740,11 @@ packages:
     cpu: [x64]
     os: [win32]
 
+  '@pixiv/three-vrm-animation@3.5.5':
+    resolution: {integrity: sha512-Q0kEtmftxfv0iCUHQkJH2jAr1zmT9ywYXnAzhxnLPMYCsx0Kken3J3U2GJF9PdGZmLlKpoK0LFEXVdD/L7ZA4Q==}
+    peerDependencies:
+      three: '>=0.137'
+
   '@pixiv/three-vrm-core@3.5.5':
     resolution: {integrity: sha512-jjaXZbMVRsk2HAGVxqDLmSJyGOJqbMcJpuTHR1TY/TN1FxiKdAzSqdr/ZUcczYipNf8IL9vDT9NX2XmWj+ybRQ==}
     peerDependencies:
@@ -10792,6 +10800,9 @@ packages:
 
   '@pixiv/types-vrmc-vrm-1.0@3.5.5':
     resolution: {integrity: sha512-WnemHHo2375BcBdumEhvrupZzsMSzTfdWlokmV9sUX2oC+OAQqJFfBjLF8ppkOhzHpl4MAPJqEfuhBJtNPm9ww==}
+
+  '@pixiv/types-vrmc-vrm-animation-1.0@3.5.5':
+    resolution: {integrity: sha512-pyow6wBLdRZbLQbtHqu8uvYG+NXJbwIiLVK6pM6UvtaYotecOv43t6qIdMLYuieV+F+bEJcdfOLFZZVolrOOcQ==}
 
   '@pkgjs/parseargs@0.11.0':
     resolution: {integrity: sha512-+1VkjdD0QBLPodGrJUeqarH8VAIvQODIbwh9XpP5Syisf7YoQgsJKPNFoqqLQlu+VQ/tVSshMR6loPMn8U+dPg==}
@@ -16094,6 +16105,13 @@ snapshots:
   '@oxlint/binding-win32-x64-msvc@1.76.0':
     optional: true
 
+  '@pixiv/three-vrm-animation@3.5.5(three@0.180.0)':
+    dependencies:
+      '@pixiv/three-vrm-core': 3.5.5(three@0.180.0)
+      '@pixiv/types-vrmc-vrm-1.0': 3.5.5
+      '@pixiv/types-vrmc-vrm-animation-1.0': 3.5.5
+      three: 0.180.0
+
   '@pixiv/three-vrm-core@3.5.5(three@0.180.0)':
     dependencies:
       '@pixiv/types-vrm-0.0': 3.5.5
@@ -16152,6 +16170,10 @@ snapshots:
   '@pixiv/types-vrmc-springbone-extended-collider-1.0@3.5.5': {}
 
   '@pixiv/types-vrmc-vrm-1.0@3.5.5': {}
+
+  '@pixiv/types-vrmc-vrm-animation-1.0@3.5.5':
+    dependencies:
+      '@pixiv/types-vrmc-vrm-1.0': 3.5.5
 
   '@pkgjs/parseargs@0.11.0':
     optional: true

@@ -3,9 +3,10 @@ import { useEffect, useRef, useState } from 'react'
 import * as THREE from 'three'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
 import {
-  VRMExpressionPresetName, VRMHumanBoneName, VRMLoaderPlugin, VRMUtils, type VRM,
+  VRMExpressionPresetName, VRMLoaderPlugin, VRMUtils, type VRM,
 } from '@pixiv/three-vrm'
 import type { AvatarActivity } from './AvatarOverlay.tsx'
+import { selectAvatarMotion, VrmMotionController } from './VrmMotionController.ts'
 import css from './AvatarOverlay.module.css'
 
 const MOUTH_PRESETS = [
@@ -67,6 +68,8 @@ export function VrmAvatar({ activity, speechText, speechActive }: VrmAvatarProps
     let disposed = false
     let frame = 0
     let vrm: VRM | undefined
+    let motionController: VrmMotionController | undefined
+    let lookTarget: THREE.Object3D | undefined
     const clock = new THREE.Clock()
     const loader = new GLTFLoader()
     loader.register(parser => new VRMLoaderPlugin(parser))
@@ -77,6 +80,14 @@ export function VrmAvatar({ activity, speechText, speechActive }: VrmAvatarProps
       VRMUtils.combineSkeletons(vrm.scene)
       vrm.scene.traverse((object) => { object.frustumCulled = false })
       scene.add(vrm.scene)
+      motionController = new VrmMotionController(vrm)
+      motionController.setMotion(selectAvatarMotion(activityRef.current, speechActiveRef.current))
+      if (vrm.lookAt !== undefined) {
+        lookTarget = new THREE.Object3D()
+        lookTarget.position.set(0, 1.35, 2.8)
+        scene.add(lookTarget)
+        vrm.lookAt.target = lookTarget
+      }
       setLoadState('ready')
     }).catch(() => { if (!disposed) setLoadState('error') })
 
@@ -98,43 +109,33 @@ export function VrmAvatar({ activity, speechText, speechActive }: VrmAvatarProps
       const elapsed = clock.elapsedTime
       const model = vrm
       if (model !== undefined) {
+        const speaking = speechRef.current !== '' && speechActiveRef.current
+        motionController?.setMotion(selectAvatarMotion(activityRef.current, speaking))
+        motionController?.update(delta)
+        if (lookTarget !== undefined) {
+          const glanceScene = Math.floor(elapsed / 4.8) % 4
+          const glanceX = glanceScene === 1 ? 0.22 : glanceScene === 3 ? -0.2 : 0
+          lookTarget.position.x = THREE.MathUtils.lerp(lookTarget.position.x, glanceX + Math.sin(elapsed * 0.6) * 0.025, delta * 2.2)
+          lookTarget.position.y = THREE.MathUtils.lerp(lookTarget.position.y, 1.34 + Math.sin(elapsed * 0.43) * 0.04, delta * 2.2)
+        }
         const expressions = model.expressionManager
         if (expressions !== undefined) {
           for (const preset of MOUTH_PRESETS) expressions.setValue(preset, 0)
           speechPulse.current = Math.max(0, speechPulse.current - delta * 2.4)
-          if (speechRef.current !== '' && speechActiveRef.current) {
+          if (speaking) {
             const openness = (0.28 + 0.72 * Math.abs(Math.sin(elapsed * 13))) * (0.35 + 0.65 * speechPulse.current)
             expressions.setValue(visemeForText(speechRef.current), openness)
           }
-          expressions.setValue(VRMExpressionPresetName.Happy, activityRef.current === 'complete' ? 0.78 : 0)
-          expressions.setValue(VRMExpressionPresetName.Relaxed, activityRef.current === 'idle' ? 0.32 : 0)
-          expressions.setValue(VRMExpressionPresetName.Surprised, activityRef.current === 'complete' ? Math.max(0, 0.35 - elapsed % 4) : 0)
-          const blinkPhase = elapsed % 4.6
-          expressions.setValue(VRMExpressionPresetName.Blink, blinkPhase > 4.42 ? Math.sin((blinkPhase - 4.42) / 0.18 * Math.PI) : 0)
+          expressions.setValue(VRMExpressionPresetName.Happy, activityRef.current === 'complete' ? 0.82 : speaking ? 0.18 : 0)
+          expressions.setValue(VRMExpressionPresetName.Relaxed, activityRef.current === 'idle' ? 0.34 : 0)
+          expressions.setValue(VRMExpressionPresetName.Surprised, activityRef.current === 'complete' ? Math.max(0, 0.42 - elapsed % 4) : 0)
+          const blinkInterval = 3.8 + Math.sin(elapsed * 0.17) * 0.7
+          const blinkPhase = elapsed % blinkInterval
+          const blink = blinkPhase > blinkInterval - 0.18
+            ? Math.sin((blinkPhase - blinkInterval + 0.18) / 0.18 * Math.PI)
+            : 0
+          expressions.setValue(VRMExpressionPresetName.Blink, blink)
         }
-
-        const humanoid = model.humanoid
-        const head = humanoid.getNormalizedBoneNode(VRMHumanBoneName.Head)
-        const spine = humanoid.getNormalizedBoneNode(VRMHumanBoneName.Spine)
-        const leftArm = humanoid.getNormalizedBoneNode(VRMHumanBoneName.LeftUpperArm)
-        const rightArm = humanoid.getNormalizedBoneNode(VRMHumanBoneName.RightUpperArm)
-        const leftForearm = humanoid.getNormalizedBoneNode(VRMHumanBoneName.LeftLowerArm)
-        const rightForearm = humanoid.getNormalizedBoneNode(VRMHumanBoneName.RightLowerArm)
-        model.scene.position.y = Math.sin(elapsed * 1.4) * 0.025
-        model.scene.rotation.y = Math.sin(elapsed * 0.55) * 0.045
-        if (head !== null) {
-          head.rotation.y = Math.sin(elapsed * 0.8) * 0.09
-          head.rotation.x = activityRef.current === 'working' ? 0.08 + Math.sin(elapsed * 3) * 0.045 : Math.sin(elapsed * 1.2) * 0.04
-        }
-        if (spine !== null) {
-          spine.rotation.z = Math.sin(elapsed * 1.1) * 0.035
-          spine.rotation.x = Math.sin(elapsed * 1.4) * 0.018
-        }
-        const working = activityRef.current === 'working'
-        if (leftArm !== null) leftArm.rotation.z = (working ? -0.72 : -1.05) + Math.sin(elapsed * 1.3) * 0.035
-        if (rightArm !== null) rightArm.rotation.z = (working ? 0.72 : 1.05) - Math.sin(elapsed * 1.3) * 0.035
-        if (leftForearm !== null) leftForearm.rotation.y = working ? -0.78 + Math.sin(elapsed * 5) * 0.05 : -0.2
-        if (rightForearm !== null) rightForearm.rotation.y = working ? 0.78 - Math.sin(elapsed * 5) * 0.05 : 0.2
         model.update(delta)
       }
       renderer.render(scene, camera)
@@ -145,6 +146,8 @@ export function VrmAvatar({ activity, speechText, speechActive }: VrmAvatarProps
       disposed = true
       cancelAnimationFrame(frame)
       observer.disconnect()
+      motionController?.dispose()
+      if (lookTarget !== undefined) scene.remove(lookTarget)
       renderer.dispose()
       vrm?.scene.traverse((object) => {
         if (object instanceof THREE.Mesh) {

@@ -36,3 +36,4 @@ export {
   createAvatarMotionSource, finalSpeech, partialSpeechText, type AvatarMotionSnapshot, type AvatarMotionSource,
 } from './motion.ts'
 export { visemeForText } from './VrmAvatar.tsx'
+export { selectAvatarMotion, VrmMotionController, type AvatarMotionName } from './VrmMotionController.ts'

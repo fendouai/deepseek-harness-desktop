@@ -14,7 +14,7 @@ Status: implemented
 
 Web 应用内置 Mina、Yuna、Rin 和 Sora 四张原创生成角色图。稳定的根相对 URL 让 client 插件 bundle 保持轻量，也让 Vite 将资源复制到 Web 与桌面发行物。选择预设会清除自定义图片并保留最后一个预设标识，因此用户从自定义图片返回时不会遇到含义不明的空状态。素材调研评估过第三方 CC0 角色包，但内置文件没有使用这些资源，避免默认体验依赖外部站点的下载流程或含义不够明确的源文件再分发范围。
 
-默认渲染器是基于 `three` 和 `@pixiv/three-vrm` 的 WebGL VRM 1.0 driver。它加载 AvatarSample_A © pixiv VRoid Project；模型内嵌设置允许所有人用作 Avatar、企业商用以及署名再分发，适用 VRM Public License 1.0。署名信息随资源发布。driver 操作标准 VRM 口型表情、面部表情、眨眼，以及标准化 humanoid 的头部、脊柱、上臂和下臂骨骼。渲染器卸载时取消动画帧、断开尺寸观察、释放 WebGL 资源，并释放网格几何与材质。
+默认渲染器是基于 `three`、`@pixiv/three-vrm` 和官方 MIT 许可 `@pixiv/three-vrm-animation` 实现的 WebGL VRM 1.0 driver。它加载 AvatarSample_A © pixiv VRoid Project；模型内嵌设置允许所有人用作 Avatar、企业商用以及署名再分发，适用 VRM Public License 1.0。署名信息随资源发布。`AnimationMixer` 在原创的待机观察、工作打字、说话手势和完成挥手片段间交叉淡化，并映射到规范化 humanoid 骨骼；说话临时取得优先级，完成动作只播放一次。非固定间隔眨眼、移动视线、口型和任务表情保持为独立面部层。渲染器卸载时取消动画帧、断开尺寸观察、停止并解除 mixer 缓存、释放 WebGL 资源，并释放网格几何与材质。
 
 一个 root 级动作投影跟随当前选中会话 binding，只发布当前局部 Assistant 回复中的可见文本块。文本末尾以确定方式选择 `aa`、`ih`、`ou`、`ee` 或 `oh`；新的流内容提高一个逐渐衰减的发音脉冲，渲染时钟提供音素内部动作。结果是文本同步音素动画，并不宣称与音频时间精确对齐。精确音频口型需要后续 TTS provider 向 driver 暴露音素或单词时间轨。
 
