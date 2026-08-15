@@ -1,11 +1,15 @@
 // @vitest-environment jsdom
-import { afterEach, describe, expect, it } from 'vitest'
-import { cleanup, fireEvent, render } from '@testing-library/react'
+import { afterEach, describe, expect, it, vi } from 'vitest'
+import { cleanup, fireEvent, render, waitFor } from '@testing-library/react'
 import { useSyncExternalStore } from 'react'
 import { AvatarOverlay, avatarActivity, createAvatarStore } from '@deepseek-ai/dsh-client-ui-avatar/client'
 import type { SessionListState } from '@deepseek-ai/dsh-client-runtime/client'
 
-afterEach(() => { cleanup(); localStorage.clear() })
+afterEach(() => {
+  cleanup()
+  localStorage.clear()
+  Reflect.deleteProperty(window, 'webkitSpeechRecognition')
+})
 
 function hookOf<T>(store: { subscribe: (fn: () => void) => () => void; getSnapshot: () => T }) {
   return function useStore<S>(select: (state: T) => S): S {
@@ -13,7 +17,7 @@ function hookOf<T>(store: { subscribe: (fn: () => void) => () => void; getSnapsh
   }
 }
 
-function mount(running = false) {
+function mount(running = false, sendMessage?: (text: string) => Promise<void>) {
   const store = createAvatarStore().create('overlay-test')
   store.actions.selectPreset('mina')
   const state = {
@@ -27,6 +31,7 @@ function mount(running = false) {
       useWorkspaces={(() => undefined) as never}
       useStore={hookOf(store)}
       actions={store.actions}
+      {...sendMessage === undefined ? {} : { sendMessage }}
     />),
   }
 }
@@ -65,8 +70,30 @@ describe('Avatar overlay', () => {
     window.history.replaceState({}, '', '/?dshDesktopDebug=1')
     const { getByRole } = mount()
     fireEvent.click(getByRole('button', { name: 'Talk' }))
-    fireEvent.click(getByRole('button', { name: 'Mic' }))
+    fireEvent.click(getByRole('button', { name: 'Speak' }))
     expect(getByRole('alert').textContent).toContain('packaged macOS app')
     window.history.replaceState({}, '', '/')
+  })
+
+  it('automatically sends a completed voice transcription', async () => {
+    class Recognition {
+      lang = ''
+      interimResults = false
+      continuous = false
+      onresult: ((event: { results: { 0: { 0: { transcript: string } } } }) => void) | null = null
+      onerror: (() => void) | null = null
+      onend: (() => void) | null = null
+      start(): void {
+        this.onresult?.({ results: { 0: { 0: { transcript: '自动发送这句话' } } } })
+        this.onend?.()
+      }
+      stop(): void { this.onend?.() }
+    }
+    Object.assign(window, { webkitSpeechRecognition: Recognition })
+    const sendMessage = vi.fn(async () => {})
+    const { getByRole } = mount(false, sendMessage)
+    fireEvent.click(getByRole('button', { name: 'Talk' }))
+    fireEvent.click(getByRole('button', { name: 'Speak' }))
+    await waitFor(() => { expect(sendMessage).toHaveBeenCalledWith('自动发送这句话') })
   })
 })

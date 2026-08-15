@@ -2,5 +2,5 @@
 # side as of the last confirmed-consistent state. Both languages carry equal authority;
 # after editing either side, bring the other along and re-record with:
 #   pnpm run verify-translation-pairing --write .agents/notes/implemented/feature/2026-08-15-session-aware-one-image-avatar.md
-2026-08-15-session-aware-one-image-avatar.md: 4708f2b45d92e90ffee8e13062474bea2bac8463
-2026-08-15-session-aware-one-image-avatar.zh.md: d8069e7b4a9981cb4777712c010277b928489898
+2026-08-15-session-aware-one-image-avatar.md: 8733a59bc610aad162b6fce246ac63bdfe038cef
+2026-08-15-session-aware-one-image-avatar.zh.md: 59718d872d13b873ee101e7f235b87304b3b305e

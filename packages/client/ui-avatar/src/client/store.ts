@@ -23,6 +23,7 @@ export interface AvatarStoreState {
   enabled: boolean
   image: string | null
   renderer: 'image' | 'vrm'
+  handsFreeVoice: boolean
   speakReplies: boolean
   preset: AvatarPresetId
   size: number
@@ -32,6 +33,7 @@ type AvatarActions = {
   toggle: (draft: AvatarStoreState) => void
   setImage: (draft: AvatarStoreState, image: string) => void
   useVrm: (draft: AvatarStoreState) => void
+  toggleHandsFreeVoice: (draft: AvatarStoreState) => void
   toggleSpeakReplies: (draft: AvatarStoreState) => void
   selectPreset: (draft: AvatarStoreState, preset: AvatarPresetId) => void
   setSize: (draft: AvatarStoreState, size: number) => void
@@ -52,12 +54,15 @@ export function clampAvatarSize(size: number): number {
  */
 export function createAvatarStore(): EngineStoreHandle<AvatarStoreState, AvatarActions> {
   return defineStore({
-    init: (): AvatarStoreState => ({ enabled: true, image: null, renderer: 'vrm', speakReplies: false, preset: 'mina', size: 280 }),
-    persist: 'dsh.avatar.v4',
+    init: (): AvatarStoreState => ({
+      enabled: true, image: null, renderer: 'vrm', handsFreeVoice: false, speakReplies: false, preset: 'mina', size: 280,
+    }),
+    persist: 'dsh.avatar.v5',
     actions: {
       toggle: (draft) => { draft.enabled = !draft.enabled },
       setImage: (draft, image: string) => { draft.image = image; draft.renderer = 'image'; draft.enabled = true },
       useVrm: (draft) => { draft.renderer = 'vrm'; draft.enabled = true },
+      toggleHandsFreeVoice: (draft) => { draft.handsFreeVoice = !draft.handsFreeVoice },
       toggleSpeakReplies: (draft) => { draft.speakReplies = !draft.speakReplies },
       selectPreset: (draft, preset: AvatarPresetId) => { draft.preset = preset; draft.image = null; draft.renderer = 'image'; draft.enabled = true },
       setSize: (draft, size: number) => { draft.size = clampAvatarSize(size) },

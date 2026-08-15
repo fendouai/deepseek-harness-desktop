@@ -63,46 +63,43 @@ export function AvatarOverlay({ useSessions, useStore, actions, motion, sendMess
   const [error, setError] = useState<string | null>(null)
   const spokenSeq = useRef<number | null>(null)
   const recognition = useRef<SpeechRecognitionLike | null>(null)
+  const sendingRef = useRef(false)
+  const speakingRef = useRef(false)
+  const handsFreeRef = useRef(preferences.handsFreeVoice)
+  const talkingRef = useRef(talking)
+  const runningRef = useRef(current?.running === true)
+  const awaitingReply = useRef<{ seq: number | null } | null>(null)
   const selectedPreset = AVATAR_PRESETS.find(preset => preset.id === preferences.preset) ?? AVATAR_PRESETS[0]
   const characterImage = preferences.image ?? selectedPreset.image
+  sendingRef.current = sending
+  speakingRef.current = speaking
+  handsFreeRef.current = preferences.handsFreeVoice
+  talkingRef.current = talking
+  runningRef.current = current?.running === true
 
-  useEffect(() => {
-    if (!preferences.speakReplies || motion?.finalSeq === null || motion?.finalSeq === undefined || motion.finalText === '') return
-    if (spokenSeq.current === motion.finalSeq || !('speechSynthesis' in window)) return
-    spokenSeq.current = motion.finalSeq
-    window.speechSynthesis.cancel()
-    const utterance = new SpeechSynthesisUtterance(motion.finalText)
-    utterance.lang = /[\u3400-\u9fff]/u.test(motion.finalText) ? 'zh-CN' : navigator.language
-    utterance.rate = 1.04
-    utterance.onstart = () => { setSpeaking(true) }
-    utterance.onend = () => { setSpeaking(false) }
-    utterance.onerror = () => { setSpeaking(false) }
-    window.speechSynthesis.speak(utterance)
-  }, [motion?.finalSeq, motion?.finalText, preferences.speakReplies])
-
-  useEffect(() => () => {
-    recognition.current?.stop()
-    if ('speechSynthesis' in window) window.speechSynthesis.cancel()
-  }, [])
-
-  const submitMessage = async (event?: FormEvent): Promise<void> => {
-    event?.preventDefault()
-    const text = draft.trim()
-    if (text === '' || sendMessage === undefined || sending) return
+  async function deliverText(text: string): Promise<void> {
+    const normalized = text.trim()
+    if (normalized === '' || sendMessage === undefined || sendingRef.current) return
+    sendingRef.current = true
     setSending(true)
+    setDraft(normalized)
+    awaitingReply.current = { seq: motion?.finalSeq ?? null }
     try {
-      await sendMessage(text)
+      await sendMessage(normalized)
       setDraft('')
       setError(null)
     } catch (cause) {
+      awaitingReply.current = null
       setError(cause instanceof Error ? cause.message : 'The message could not be sent.')
     } finally {
+      sendingRef.current = false
       setSending(false)
     }
   }
 
-  const toggleListening = (): void => {
-    if (listening) { recognition.current?.stop(); return }
+  function startListening(): void {
+    if (recognition.current !== null || sendingRef.current || speakingRef.current || runningRef.current) return
+    if (!talkingRef.current) return
     if (new URLSearchParams(window.location.search).has('dshDesktopDebug')) {
       setError('Microphone input requires the packaged macOS app. The bare development binary cannot request Speech Recognition safely.')
       return
@@ -116,12 +113,71 @@ export function AvatarOverlay({ useSessions, useStore, actions, motion, sendMess
     next.lang = navigator.language.startsWith('zh') ? 'zh-CN' : navigator.language
     next.interimResults = false
     next.continuous = false
-    next.onresult = (event) => { setDraft(event.results[0][0].transcript); setError(null) }
+    next.onresult = (event) => {
+      const transcript = event.results[0][0].transcript
+      setError(null)
+      void deliverText(transcript)
+    }
     next.onerror = () => { setError('Voice recognition failed. Check microphone permission and try again.') }
     next.onend = () => { setListening(false); recognition.current = null }
     recognition.current = next
     setListening(true)
     next.start()
+  }
+
+  useEffect(() => {
+    if (!preferences.speakReplies || motion?.finalSeq === null || motion?.finalSeq === undefined || motion.finalText === '') return
+    if (spokenSeq.current === motion.finalSeq || !('speechSynthesis' in window)) return
+    spokenSeq.current = motion.finalSeq
+    window.speechSynthesis.cancel()
+    const utterance = new SpeechSynthesisUtterance(motion.finalText)
+    utterance.lang = /[\u3400-\u9fff]/u.test(motion.finalText) ? 'zh-CN' : navigator.language
+    utterance.rate = 1.04
+    utterance.onstart = () => { speakingRef.current = true; setSpeaking(true) }
+    utterance.onend = () => {
+      speakingRef.current = false
+      setSpeaking(false)
+      if (handsFreeRef.current) window.setTimeout(startListening, 350)
+    }
+    utterance.onerror = () => {
+      speakingRef.current = false
+      setSpeaking(false)
+      if (handsFreeRef.current) window.setTimeout(startListening, 350)
+    }
+    window.speechSynthesis.speak(utterance)
+  }, [motion?.finalSeq, motion?.finalText, preferences.speakReplies])
+
+  useEffect(() => {
+    const pending = awaitingReply.current
+    if (pending === null || current?.running === true || motion?.finalSeq === pending.seq) return
+    awaitingReply.current = null
+    const speechOutputUnavailable = !('speechSynthesis' in window)
+    if (preferences.handsFreeVoice && (!preferences.speakReplies || speechOutputUnavailable)) {
+      window.setTimeout(startListening, 350)
+    }
+  }, [current?.running, motion?.finalSeq, preferences.handsFreeVoice, preferences.speakReplies])
+
+  useEffect(() => {
+    if (!talking || !preferences.handsFreeVoice) {
+      recognition.current?.stop()
+      return
+    }
+    window.setTimeout(startListening, 250)
+  }, [talking, preferences.handsFreeVoice])
+
+  useEffect(() => () => {
+    recognition.current?.stop()
+    if ('speechSynthesis' in window) window.speechSynthesis.cancel()
+  }, [])
+
+  const submitMessage = async (event?: FormEvent): Promise<void> => {
+    event?.preventDefault()
+    await deliverText(draft)
+  }
+
+  const toggleListening = (): void => {
+    if (listening) { recognition.current?.stop(); return }
+    startListening()
   }
 
   const importImage = (event: ChangeEvent<HTMLInputElement>): void => {
@@ -177,15 +233,26 @@ export function AvatarOverlay({ useSessions, useStore, actions, motion, sendMess
       {talking && (
         <form className={css.talkPanel} aria-label="Talk to current task" onSubmit={(event) => { void submitMessage(event) }}>
           <strong>Talk to this task</strong>
-          <p>Type a message or use the microphone, then send it to the current Harness task.</p>
+          <p>Type and send, or speak once and pause to send automatically.</p>
           <div className={css.talkRow}>
             <input value={draft} onChange={(event) => { setDraft(event.target.value) }} placeholder="Ask the current task…" aria-label="Message current task" />
-            <button type="button" onClick={toggleListening} aria-pressed={listening}>{listening ? 'Stop' : 'Mic'}</button>
+            <button
+              type="button"
+              onClick={toggleListening}
+              aria-pressed={listening}
+              disabled={!listening && (sending || speaking || current?.running === true)}
+            >
+              {listening ? 'Listening…' : 'Speak'}
+            </button>
             <button type="submit" disabled={sending || draft.trim() === ''}>{sending ? 'Sending…' : 'Send'}</button>
           </div>
           <label className={css.voiceToggle}>
             <input type="checkbox" checked={preferences.speakReplies} onChange={actions.toggleSpeakReplies} />
             Read Assistant replies aloud
+          </label>
+          <label className={css.voiceToggle}>
+            <input type="checkbox" checked={preferences.handsFreeVoice} onChange={actions.toggleHandsFreeVoice} />
+            Hands-free conversation
           </label>
           {error !== null && <p className={css.error} role="alert">{error}</p>}
         </form>

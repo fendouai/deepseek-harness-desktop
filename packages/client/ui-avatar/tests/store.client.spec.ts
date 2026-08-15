@@ -14,6 +14,7 @@ describe('Avatar store', () => {
       enabled: false,
       image: 'data:image/png;base64,AA==',
       renderer: 'image',
+      handsFreeVoice: false,
       speakReplies: false,
       preset: 'mina',
       size: 420,
@@ -25,6 +26,8 @@ describe('Avatar store', () => {
     expect(store.getSnapshot().renderer).toBe('vrm')
     store.actions.toggleSpeakReplies()
     expect(store.getSnapshot().speakReplies).toBe(true)
+    store.actions.toggleHandsFreeVoice()
+    expect(store.getSnapshot().handsFreeVoice).toBe(true)
   })
 
   it('clamps character size symmetrically', () => {
